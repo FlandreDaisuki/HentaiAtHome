@@ -34,6 +34,7 @@ $ make install-docker
 ## Run docker
 
 ```
+$ make pre-setup
 $ make run
 ```
 
