@@ -16,7 +16,7 @@ set **port** at top
 ## Install
 
 ```
-$ git clone git@github.com:FlandreDaisuki/HentaiAtHome.git
+$ git clone https://github.com/FlandreDaisuki/HentaiAtHome.git
 $ cd HentaiAtHome
 ```
 
@@ -30,11 +30,16 @@ To install **other Docker version** for **other OS** on **other arch**
 ```
 $ make install-docker
 ```
-
-## Run docker
-
+## Post-install
 ```
 $ make pre-setup
+```
+
+then re-login desktop session
+and make sure this folder path to be server
+
+## Run docker
+```
 $ make run
 ```
 
