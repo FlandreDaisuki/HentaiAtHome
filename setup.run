@@ -1,0 +1,58 @@
+#!/bin/bash
+
+HOST_PORT=65432
+CONT_PORT=$HOST_PORT
+
+# @param PROMPT
+function ask_prompt()
+{
+    PROMPT="$1"
+    while true; do
+        read -p "$PROMPT [Y/n]" yn
+        yn=${yn:-yes}
+        case $yn in
+            [Yy]* ) echo $yn; break;;
+            [Nn]* ) break;;
+            * ) echo "Please answer yes or no.";;
+        esac
+    done
+}
+
+if [ $(command -v docker) ]
+then
+    if [ "$(docker ps 2>&1 | grep 'permission denied')" ]
+    then
+        sudo usermod -aG docker `whoami`
+        echo "Please logout and login to add docker group." && \
+        newgrp docker
+        sudo service docker restart
+    elif [ $(ask_prompt "Setup here \"$(pwd)\"?") ]
+    then
+        wget -N https://repo.e-hentai.org/hath/HentaiAtHome_1.4.2.zip
+        unzip -xo HentaiAtHome_1.4.2.zip HentaiAtHome.jar
+        cat Dockerfile.template | sed "s/{{user}}/$USER/g" | sed "s/{{uid}}/$UID/g" > Dockerfile
+        if [ "$(docker inspect "$USER/hath" 2>/dev/null)" = "[]" ]
+        then
+            docker build . -t="$USER/hath"
+        fi
+        docker run -it --rm --name=HatH -p=$HOST_PORT:$CONT_PORT -v=`pwd`:"/home/$USER/HentaiAtHome" "$USER/hath"
+    fi
+else
+    echo "You should install docker first.\n"
+
+    if [ $(ask_prompt "Ubuntu 16.04 x86_64?") ]
+    then
+        sudo apt-get update
+        sudo apt-get install -y \
+            apt-transport-https \
+            ca-certificates \
+            curl \
+            software-properties-common
+        curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+        sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu xenial stable"
+        sudo apt-get update
+        sudo apt-get install -y docker-ce
+    else
+        echo "Docker Installation: https://docs.docker.com/engine/installation/"
+    fi
+fi
