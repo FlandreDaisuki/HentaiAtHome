@@ -1,0 +1,16 @@
+version: '2'
+services:
+  hath:
+    image: frosty5689/hath
+    container_name: HatH
+    ports:
+      - "65432:65432" # change to your port
+    environment:
+      - HATH_CLIENT_ID=***** # change to yours
+      - HATH_CLIENT_KEY=************ # change to yours
+    volumes:
+      - ./cache:/hath/cache
+      - ./data:/hath/data
+      - ./download:/hath/download
+      - ./log:/hath/log
+      - ./tmp:/hath/tmp
